@@ -187,10 +187,12 @@ if __name__ == '__main__':
     os.makedirs('static/generated', exist_ok=True)
     os.makedirs('templates', exist_ok=True)
     
-    # 获取端口（生产环境会提供PORT环境变量）
-    port = int(os.environ.get('PORT', 5000))
-    
-    # 生产环境关闭调试模式
-    debug = os.environ.get('FLASK_ENV') == 'development'
-    
-    app.run(debug=debug, host='0.0.0.0', port=port) 
+    # Vercel兼容性
+    if os.environ.get('VERCEL'):
+        # Vercel环境
+        app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+    else:
+        # 本地环境
+        port = int(os.environ.get('PORT', 5000))
+        debug = os.environ.get('FLASK_ENV') == 'development'
+        app.run(debug=debug, host='0.0.0.0', port=port)
